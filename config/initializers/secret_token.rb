@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Weathertool::Application.config.secret_key_base = '941423df32068fe3440aa9367b6b174cb13531bb2ec7ae0114e2d86ca107c84082bad813ea4018413f1f770fa039b2f8fcbacefb87c5b46cf33f0fa3b801c6a1'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Weathertool::Application.config.secret_key_base = secure_token
